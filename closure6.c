@@ -23,26 +23,19 @@ int do_filter(int n, int *arr, filter_t **closure) {
 
 int main() {
 	int a[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
-	struct cap {
-		int val;
-		filter_t *cb;
-	};
-	bool cb(closure_t closure, int val) {
-		struct cap *cap = container_of(closure, struct cap, cb);
-		/*
-		for (int d = 2, d2 = 4; d2 <= val; d2 += 2*d+1, ++d)
-			if (val % d == 0)
-				return false;
-		return val != 1;
-		*/
-		return val % cap->val == 0;
-	}
-	struct cap cap = { .val = 4, .cb = cb }; 
-
+	int val;
+	scanf("%d", &val);
+	filter_t **lambda = &((struct cap { int val; filter_t *cb; })
+		{ .val = val, .cb = ({
+			bool cb(closure_t closure, int val) {
+				struct cap *cap = container_of(closure, struct cap, cb);
+				return val % cap->val == 0;
+			} cb; })}).cb;
 	int n = 1[&a]-a;
-	n = do_filter(n, a, &cap.cb);
+	n = do_filter(n, a, lambda);
 	for (int i = 0; i < n; ++i)
 		printf("%d ", a[i]);
 	puts("");
 	return 0;
 }
+
